@@ -1,0 +1,12 @@
+{
+  "threshold": 0.95,
+  "context_frames": 5,
+  "yolo_weights_path": "models/best.pt",
+  "gru_weights_path": "models/gru_tracking_camera.pt",
+  "model_variant": "tracking_plus_camera",
+  "held_out_results": {
+    "detected_pct": 81,
+    "false_alarm_pct": 5,
+    "note": "From GRU tracking+camera variant, evaluated on the same 100 crash + 100 normal held-out videos used throughout development."
+  }
+}

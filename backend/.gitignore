@@ -1,0 +1,66 @@
+# ==========================================
+# ROADRES_Q - ROOT GITIGNORE
+# ==========================================
+
+# ---------- Secrets: never upload ----------
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# ---------- Node.js (backend) ----------
+node_modules/
+**/node_modules/
+npm-debug.log*
+
+# ---------- Python virtual environments ----------
+**/venv/
+**/.venv/
+**/env/
+
+# ---------- Python cache ----------
+**/__pycache__/
+*.py[cod]
+*.pyo
+.ipynb_checkpoints/
+
+# ---------- Python generated files ----------
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+
+# ---------- Runtime-generated files ----------
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+interference-service/snapshots/*
+interference-service/runs/
+
+result*.json
+*.log
+
+# ---------- Machine learning temporary files ----------
+runs/
+wandb/
+.tensorboard/
+
+# ---------- Large model weights (over GitHub's 100 MB limit) ----------
+interference-service/models/*.pt
+interference-service/models/*.pth
+
+# ---------- Editor and system files ----------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ---------- Temporary files ----------
+*.tmp
+*.bak
+*.swp
+*.swo
