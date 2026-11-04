@@ -72,7 +72,7 @@ A minimal layout for this project:
 │   │   ├── app.js
 │   │   ├── constants.js
 │   │   └── index.js
-│   ├── uploads/                 # temporary videos (not tracked)
+│   ├── uploads/                 # temporary videos (only .gitkeep is tracked)
 │   └── package.json
 ├── interference-service/
 │   ├── server.py                # FastAPI app, POST /analyze
@@ -81,7 +81,7 @@ A minimal layout for this project:
 │   ├── config.json
 │   ├── requirements.txt
 │   ├── models/                  # YOLO and GRU weights (not tracked)
-│   └── snapshots/               # impact frames (not tracked)
+│   └── snapshots/               # impact frame images saved at runtime (images not tracked)
 ├── .gitignore
 └── README.md
 ```
