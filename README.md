@@ -49,7 +49,7 @@ Family and authority receive the alert with the location
 |---|---|
 | Backend API | Node.js, Express, Mongoose, JWT, bcrypt, multer |
 | Database | MongoDB Atlas |
-| Detection service | Python, FastAPI, Uvicorn, Ultralytics YOLO, PyTorch (GRU), OpenCV |
+| Detection service | Python, FastAPI, Uvicorn, Ultralytics YOLO, PyTorch (GRU) |
 | Authority lookup | Overpass API on OpenStreetMap data |
 
 ## Repository Structure
