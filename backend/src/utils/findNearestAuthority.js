@@ -1,19 +1,19 @@
 const axios = require('axios');
 
-// Your own list of highway authorities (MongoDB) is optional: if that model file is missing,
-// the lookup simply goes straight to Geoapify.
+// Your own contact list (MongoDB) is OPTIONAL: if you never loaded one, or the model file is
+// missing, the lookup goes straight to Geoapify.
 let Authority = null;
 try { Authority = require('../models/Authority.model'); } catch (e) { /* optional */ }
 
 // Search order around the crash point:
-//   1. your own highway-authority list (if you loaded one with `npm run seed:authorities`)
-//   2. Geoapify Places API -> nearest police stations, then Place Details API -> their phone numbers
-//   3. nothing found -> null (the app tells the user to call 1033 / 112)
+//   1. your own list (only if you loaded one with `npm run seed:authorities`)
+//   2. Geoapify Places API -> nearest police stations, then Place Details API -> phone numbers
+//   3. nothing found -> null (the app tells the user to call 112)
 
 const GEOAPIFY = 'https://api.geoapify.com/v2';
-const POLICE_CATEGORY = process.env.GEOAPIFY_POLICE_CATEGORY || 'service.police'; // key from Geoapify's category list
-const MAP_RADII_KM = [10, 25, 50];   // widen the search until something is found
-const DETAIL_LOOKUPS = 5;            // phone lookups per alert (1 credit each on the free plan)
+const POLICE_CATEGORY = process.env.GEOAPIFY_POLICE_CATEGORY || 'service.police';
+const MAP_RADII_KM = [10, 25, 50]; // widen the search until something is found
+const DETAIL_LOOKUPS = 5;          // phone lookups per alert (1 credit each on the free plan)
 const OWN_MAX_KM = Number(process.env.AUTHORITY_MAX_KM || 100);
 const OWN_RADII_KM = [25, 50, OWN_MAX_KM].filter((k, i, a) => k <= OWN_MAX_KM && a.indexOf(k) === i);
 
@@ -64,7 +64,7 @@ async function searchOwnList(lat, lng) {
       }
     }
   } catch (e) {
-    console.warn('Own authority list not used:', e.message); // e.g. no database index yet
+    console.warn('Own authority list not used:', e.message); // e.g. the list was never loaded
   }
   return null;
 }
@@ -116,7 +116,9 @@ async function addPhone(place, key) {
 
 async function searchGeoapify(lat, lng) {
   const key = process.env.GEOAPIFY_API_KEY;
-  if (!key) return null; // not set up: skip this source
+  if (!key) {
+    throw new Error('GEOAPIFY_API_KEY is not set in backend/.env (restart the server after adding it)');
+  }
   for (const km of MAP_RADII_KM) {
     const found = await placesNear(lat, lng, km, key);
     if (found.length) {
@@ -130,10 +132,18 @@ async function searchGeoapify(lat, lng) {
 
 // Returns { name, phone, mobile, distanceKm, ... } or null if nothing was found.
 async function findNearestAuthority(lat, lng) {
+  console.log(`Authority lookup at ${lat}, ${lng}`);
   const own = await searchOwnList(lat, lng);
-  if (own) return own;
+  if (own) {
+    console.log(`  -> from your own list: ${own.name} (${own.distanceKm} km, mobile: ${own.mobile || 'none'})`);
+    return own;
+  }
   try {
-    return await searchGeoapify(lat, lng);
+    const found = await searchGeoapify(lat, lng);
+    console.log(found
+      ? `  -> from Geoapify: ${found.name} (${found.distanceKm} km, mobile: ${found.mobile || 'none'})`
+      : '  -> nothing found within 50 km');
+    return found;
   } catch (e) {
     throw new Error(`map lookup failed (${e.response ? 'status ' + e.response.status : e.message})`);
   }
